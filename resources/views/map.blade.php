@@ -31,7 +31,7 @@
 
         /* Tombol pencarian lebih stylish */
         .btn-outline-success {
-            border-color: #f39c12;
+            border-color: #e9bd75;
             color: #f39c12;
             transition: 0.3s;
         }
