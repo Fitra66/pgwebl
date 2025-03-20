@@ -21,4 +21,6 @@
     crossorigin="anonymous"></script>
 
     @yield('scripts')
+
+    @include('components.toasts')
 </html>
