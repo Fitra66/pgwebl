@@ -236,5 +236,70 @@
 
             drawnItems.addLayer(layer);
         });
+
+        //GeoJSON Points
+        var point = L.geoJson(null, {
+				onEachFeature: function (feature, layer) {
+					var popupContent = "Nama: " + feature.properties.name + "<br>" +
+						"Description: " + feature.properties.description + "<br>" +
+                        "Dibuat: " + feature.properties.created_at;
+					layer.on({
+						click: function (e) {
+							point.bindPopup(popupContent);
+						},
+						mouseover: function (e) {
+							point.bindTooltip(feature.properties.name);
+						},
+					});
+				},
+			});
+			$.getJSON("{{route ('_geojson_points')}}", function (data) {
+				point.addData(data);
+				map.addLayer(point);
+			});
+
+        var polyline = L.geoJson(null, {
+                onEachFeature: function (feature, layer) { // Membuat popup dan tooltip
+                    var popupContent = "Nama: " + feature.properties.name + "<br>" +
+                        "Description: " + feature.properties.description + "<br>" +
+                        "Dibuat: " + feature.properties.created_at + "<br>" +
+                        "Panjang (m): " + feature.properties.length_m + "<br>" +
+                        "Panjang (km): " + feature.properties.length_km;
+                    layer.on({
+                        click: function (e) {
+                            polyline.bindPopup(popupContent);
+                        },
+                        mouseover: function (e) {
+                            polyline.bindTooltip(feature.properties.name);
+                        },
+                    });
+                },
+            });
+            $.getJSON("{{route ('_geojson_polylines')}}", function (data) {
+                polyline.addData(data);
+                map.addLayer(polyline);
+            });
+
+        var polygon = L.geoJson(null, {
+                onEachFeature: function (feature, layer) { // Membuat popup dan tooltip
+                    var popupContent = "Nama: " + feature.properties.name + "<br>" +
+                        "Deskripsi: " + feature.properties.description + "<br>" +
+                        "Dibuat: " + feature.properties.created_at + "<br>" +
+                        "luas_m2: " + feature.properties.luas_m2 + "<br>" +
+                        "luas_hektar: " + feature.properties.luas_hektar;
+                    layer.on({
+                        click: function (e) {
+                            polygon.bindPopup(popupContent);
+                        },
+                        mouseover: function (e) {
+                            polygon.bindTooltip(feature.properties.name);
+                        },
+                    });
+                },
+            });
+            $.getJSON("{{route ('_geojson_polygons')}}", function (data) {
+                polygon.addData(data);
+                map.addLayer(polygon);
+            });
     </script>
 @endsection
