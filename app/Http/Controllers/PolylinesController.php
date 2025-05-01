@@ -41,6 +41,7 @@ class PolylinesController extends Controller
             'name' => 'required|string|max:255|unique:polylines,name', // Pastikan 'name' tidak kosong dan unik
             'description' => 'required|string', // 'description' boleh kosong
             'geom_polyline' => 'required|string', // Pastikan 'geom_polyline' tidak kosong
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi untuk gambar
         ],
         [
             'name.required' => 'Nama perlu diisi',
@@ -49,10 +50,25 @@ class PolylinesController extends Controller
             'geom_polyline.required' => 'Geometry perlu diisi'
         ]);
 
+         // Create image direktory if not exists
+         if (!file_exists(public_path('images'))) {
+            mkdir(public_path('images'), 0777, true);
+        }
+
+        // Upload image
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $name_image = time() . "_polyline." . strtolower($image->getClientOriginalExtension());
+            $image->move('storage/images', $name_image);
+        } else {
+            $name_image = null;
+        }
+
         $data = [
             'geom' => $request->geom_polyline,
             'name' => $request->name,
             'description' => $request->description,
+            'image' => $name_image,
         ];
 
         // Create data
