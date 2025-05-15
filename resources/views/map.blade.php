@@ -271,7 +271,7 @@
             drawnItems.addLayer(layer);
         });
 
-        // GeoJSON Points
+
         var point = L.geoJson(null, {
             onEachFeature: function(feature, layer) {
                 var routedelete = "{{ route('points.destroy', ':id') }}";
@@ -312,7 +312,7 @@
             map.addLayer(point);
         });
 
-        //GeoJSON Polyline
+
         var polyline = L.geoJson(null, {
             onEachFeature: function(feature, layer) {
                 var routedelete = "{{ route('polylines.destroy', ':id') }}";
@@ -360,7 +360,7 @@
             map.addLayer(polyline);
         });
 
-        //GeoJSON Polygon
+
         var polygon = L.geoJson(null, {
             onEachFeature: function(feature, layer) {
                 var routedelete = "{{ route('polygons.destroy', ':id') }}";
