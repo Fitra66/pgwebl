@@ -7,6 +7,7 @@ use App\Http\Controllers\PointsController;
 use App\Http\Controllers\PolygonsController;
 use App\Http\Controllers\PolylinesController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\AnalitikPasarController;
 
 Route::get('/map', [PointsController::class, 'index']) ->name('map');
 
@@ -29,5 +30,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/analitik', [AnalitikPasarController::class, 'index'])->name('analitik');
+
+Route::post('/vote-kategori', [AnalitikPasarController::class, 'voteKategori'])->name('vote.kategori');
+Route::get('/rekap-per-pasar', [AnalitikPasarController::class, 'getRekapPerPasar'])->name('rekap.perpasar');
+Route::post('/reset-vote', [AnalitikPasarController::class, 'resetVote'])->name('vote.reset');
+
 
 require __DIR__.'/auth.php';

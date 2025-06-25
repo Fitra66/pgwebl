@@ -162,7 +162,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script>
-        var map = L.map('map').setView([38.75347038740127, 126.21261857291172], 13);
+        var map = L.map('map').setView([-7.7970848027395805, 110.35804337079026], 13);
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -242,7 +242,8 @@
                     "<small>Dibuat oleh <strong>" + feature.properties.user_created + "</strong> <br>" +
 
                     "<div class='d-flex justify-content-between mt-4'>" +
-                    "<a href='" + routeedit + "' class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i> Edit</a>" +
+                    "<a href='" + routeedit +
+                    "' class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i> Edit</a>" +
                     "<form method='POST' action='" + routedelete + "'>" +
                     '@csrf' + '@method('DELETE')' +
                     "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`Hapus Point?`)'><i class='fa-regular fa-trash-can'></i> Delete</button>" +
@@ -261,6 +262,14 @@
         $.getJSON("{{ route('api.points') }}", function(data) {
             point.addData(data);
             map.addLayer(point);
+            // Cek parameter jika ada
+            const params = new URLSearchParams(window.location.search);
+            const featureId = params.get("id");
+            const featureType = params.get("type");
+
+            if (featureId && featureType === "point") {
+                zoomToFeatureById(featureId, point);
+            }
         });
 
         /* GeoJSON Polyline */
@@ -280,7 +289,8 @@
                     "' width='200' alt=''>" + "<br>" +
                     "<small>Dibuat oleh <strong>" + feature.properties.user_created + "</strong> <br>" +
                     "<div class='d-flex justify-content-between mt-4'>" +
-                    "<a href='" + routeedit + "' class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i> Edit</a>" +
+                    "<a href='" + routeedit +
+                    "' class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i> Edit</a>" +
                     "<form method='POST' action='" + routedelete + "'>" +
                     '@csrf' + '@method('DELETE')' +
                     "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`Hapus Polyline?`)'><i class='fa-regular fa-trash-can'></i> Delete</button>" +
@@ -299,6 +309,14 @@
         $.getJSON("{{ route('api.polylines') }}", function(data) {
             polyline.addData(data);
             map.addLayer(polyline);
+            // Cek parameter jika ada
+            const params = new URLSearchParams(window.location.search);
+            const featureId = params.get("id");
+            const featureType = params.get("type");
+
+            if (featureId && featureType === "polyline") {
+                zoomToFeatureById(featureId, polyline);
+            }
         });
 
         /* GeoJSON Polygon */
@@ -319,7 +337,8 @@
                     "' width='200' alt=''>" + "<br>" +
                     "<small>Dibuat oleh <strong>" + feature.properties.user_created + "</strong> <br>" +
                     "<div class='d-flex justify-content-between mt-4'>" +
-                    "<a href='" + routeedit + "' class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i> Edit</a>" +
+                    "<a href='" + routeedit +
+                    "' class='btn btn-warning btn-sm'><i class='fa-solid fa-pen-to-square'></i> Edit</a>" +
                     "<form method='POST' action='" + routedelete + "'>" +
                     '@csrf' + '@method('DELETE')' +
                     "<button type='submit' class='btn btn-danger btn-sm' onclick='return confirm(`Hapus Polygon?`)'><i class='fa-regular fa-trash-can'></i> Delete</button>" +
@@ -338,9 +357,61 @@
         $.getJSON("{{ route('api.polygons') }}", function(data) {
             polygon.addData(data);
             map.addLayer(polygon);
+            // Cek parameter jika ada
+            const params = new URLSearchParams(window.location.search);
+            const featureId = params.get("id");
+            const featureType = params.get("type");
+
+            if (featureId && featureType === "polygon") {
+                zoomToFeatureById(featureId, polygon);
+            }
         });
 
-        /* control layer */
+        // Fungsi untuk zoom ke fitur berdasarkan ID & jenis
+        function zoomToFeatureById(id, layerGroup) {
+            let targetLayer = null;
 
+            layerGroup.eachLayer(function(layer) {
+                if (layer.feature && layer.feature.properties.id == id) {
+                    targetLayer = layer;
+                }
+            });
+
+            if (targetLayer) {
+                let bounds;
+                if (typeof targetLayer.getBounds === 'function') {
+                    bounds = targetLayer.getBounds();
+                } else if (typeof targetLayer.getLatLng === 'function') {
+                    bounds = L.latLngBounds([targetLayer.getLatLng()]);
+                }
+
+                if (bounds) {
+                    map.flyToBounds(bounds, {
+                        duration: 15,
+                        padding: [50, 50]
+                    });
+                    targetLayer.openPopup();
+                }
+            }
+        }
+
+        // Tangkap parameter dari URL
+        const params = new URLSearchParams(window.location.search);
+        const featureId = params.get("id");
+        const featureType = params.get("type");
+
+        if (featureId && featureType) {
+            const id = parseInt(featureId);
+            if (featureType === "point") {
+                zoomToFeatureById(id, point);
+            } else if (featureType === "polyline") {
+                zoomToFeatureById(id, polyline);
+            } else if (featureType === "polygon") {
+                zoomToFeatureById(id, polygon);
+            }
+        }
+
+
+        /* control layer */
     </script>
 @endsection
